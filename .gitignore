@@ -1,0 +1,4 @@
+.env
+stockfish
+__pycache__
+venv
