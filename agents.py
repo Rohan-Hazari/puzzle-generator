@@ -10,10 +10,26 @@ api_key = os.getenv("GEMINI_KEY")
 # Adjust path to your local stockfish
 ENGINE_PATH = "stockfish/stockfish.exe"
 
+
 agent = Agent(
     model=Gemini(id="gemini-2.0-flash",api_key=api_key),
-    tools=[generate_mate_in_n_puzzle(3,ENGINE_PATH)],
+    tools=[generate_mate_in_n_puzzle],
+    show_tool_calls=True,
+    markdown=True,
     instructions=[
-        "When asked for a chess puzzle, call the chess-puzzle-generator tool and return only the FEN string.Do not modify it and validate it"
+        """You are a chess puzzle expert. When asked to generate a chess puzzle:
+        1. Call the chess-puzzle-generator tool with the desired mate depth (1-6)
+        2. Once you receive the puzzle data, create the following:
+           - A descriptive title for the puzzle , dont reveal any hint here
+           - Classification of the main tactical theme (fork, pin, discovered attack, mate pattern, etc.)
+           - Difficulty rating (Easy, Medium, Hard, Expert)
+           - A subtle hint that doesn't give away the solution
+           - A detailed explanation of the solution. Example 1. Qh8+ Kxh8 2. Nf7+ Kg8 3. Nh6# + some text explaination that is optional
+           - How many moves it is checkmate
+        3. Format your response clearly with sections for each component
+        4. Include the FEN from the tool's response
+        
+        Always verify the FEN is valid before proceeding. If the tool returns an error, explain the error to the user.
+        If the tool return a ''NoneType' object is not subscriptable' that means it failed run it again"""
     ]
 )
